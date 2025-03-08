@@ -1,4 +1,5 @@
 import os
+import pwinput
 import mysql.connector
 from mysql.connector import Error
 
@@ -19,7 +20,7 @@ def signin():
     while hasUser(username) and hasEmail(email):
         username = input('Username: ')
         email = input('Email: ')
-        passwd = input('Password: ')
+        passwd = passRequire()
 
 def hasUser(username):
     try:
@@ -49,8 +50,10 @@ def hasEmail(email):
     except Error as e: 
         print(f"Error: {e}")
 
-def passRequire(passwd):
-    if len(passwd) > 8:
-        return False
-    else:
-        return True
+def passRequire():
+    password = pwinput.pwinput(prompt="Password: ")
+
+    while len(password) < 8:
+        print("Password must be at least 8 characters long.")
+        password = pwinput.pwinput(prompt="Password: ")
+

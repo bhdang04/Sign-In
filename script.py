@@ -57,3 +57,16 @@ def passRequire():
         print("Password must be at least 8 characters long.")
         password = pwinput.pwinput(prompt="Password: ")
 
+def option_handler(option):
+    match option:
+        case 1:
+            signin()
+        case 2:
+            print("Option 2 selected")
+        case 3:
+            print("Option 3 selected")
+
+option = input("1. Create New Account \n"
+    "2. Sign In \n"
+    "3. Quit Application")
+option_handler(option)

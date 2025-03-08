@@ -12,8 +12,8 @@ db = mysql.connector.connect(
 
 cursor = db.cursor()
 
-def signin():
-    print("<------------- Sign In --------------->")
+def createAcc():
+    print("<------------- Create Account --------------->")
     username = input('Username: ')
     email = input('Email: ')
 
@@ -60,11 +60,24 @@ def passRequire():
 def option_handler(option):
     match option:
         case 1:
-            signin()
+            createAcc()
         case 2:
-            print("Option 2 selected")
+            signin()
         case 3:
             print("Option 3 selected")
+
+def signin():
+    print("<--------------- Sign In --------------->")
+    username = input("Username: ")
+    password = pwinput.pwinput(prompt="Password: ")
+    cursor.execute("SELECT * FROM Users WHERE username = %s AND password = %s", (username, password))
+    result = cursor.fetchone()
+
+    if result:
+        print("You have successfully Logged In")
+    else:
+        print("Invalid Login")
+
 
 option = input("1. Create New Account \n"
     "2. Sign In \n"

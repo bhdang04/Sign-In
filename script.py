@@ -1,34 +1,56 @@
 import os
 import mysql.connector
+from mysql.connector import Error
 
-try:
-    db = mysql.connector.connect(
-        host = "localhost",
-        user = "root",
-        passwd = "Fabangel0!",
-        database = "userdatabase"
-    )
-
-    if db.is_connected():
-        print("Succesfully connected")
-    else:
-        print("Connection Failed.")
-
-    db.close()
-
-except mysql.connector.Error as e:
-    print(f"Error: {e}")
+db = mysql.connector.connect(
+    host = "localhost",
+    user = "root",
+    passwd = "",
+    database = "user_db"
+)
 
 cursor = db.cursor()
-cursor.execute("CREATE DATABASE IF NOT EXISTS userdatabase")
-cursor.execute("CREATE TABLE IF NOT EXISTS Account (id INT PRIMARY KEY, username VARCHAR(64), password VARCHAR(64))")
-
-cursor.close()
-db.close()
-
 
 def signin():
-    username = ""
-    password = ""
+    print("<------------- Sign In --------------->")
+    username = input('Username: ')
+    email = input('Email: ')
 
+    while hasUser(username) and hasEmail(email):
+        username = input('Username: ')
+        email = input('Email: ')
+        passwd = input('Password: ')
+
+def hasUser(username):
+    try:
+        cursor.execute("SELECT * FROM Users WHERE username = %s", (username,))
+        result = cursor.fetchone()
+
+        if result:
+            print(f"Error: Username '{username}' already exists. Please choose a different username.")   
+            return False         
+        else:
+            print("Username is available.")
+            return True
+    except Error as e: 
+        print(f"Error: {e}")
     
+def hasEmail(email):
+    try:
+        cursor.execute("SELECT * FROM Users WHERE email = %s", (email,))
+        result = cursor.fetchone()
+
+        if result:
+            print(f"Error: Email '{email}' already exists. Please enter a different email")
+            return False
+        else:
+            print("Email is available")
+            return True
+    except Error as e: 
+        print(f"Error: {e}")
+
+def passRequire(passwd):
+    if len(passwd) > 8:
+        return False
+    else:
+        return True

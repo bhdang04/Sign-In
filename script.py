@@ -1,5 +1,6 @@
 import os
 import pwinput
+import subprocess
 import mysql.connector
 from mysql.connector import Error
 
@@ -64,7 +65,9 @@ def option_handler(option):
         case 2:
             signin()
         case 3:
-            print("Option 3 selected")
+            return "Successfully Quit Application"
+        case _:
+            return "Invalid Option"
 
 def signin():
     print("<--------------- Sign In --------------->")
@@ -78,8 +81,18 @@ def signin():
     else:
         print("Invalid Login")
 
+def clear_screen():
+    os_name = os_name
+    if os_name == 'posix':
+        subprocess.call('clear')
+    elif os_name == 'nt':
+        subprocess.call('cls', shell=True)
+    else:
+        print("OS not supported to clear screen.")
 
 option = input("1. Create New Account \n"
     "2. Sign In \n"
-    "3. Quit Application")
+    "3. Quit Application \n"
+    "Choose one of the option above (1-3): ")
+clear_screen()
 option_handler(option)

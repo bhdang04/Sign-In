@@ -27,7 +27,7 @@ def createAcc():
 
 def insert_user(username, email, passwd):
     try:
-        cursor.execute("INSERT INTO Users (username, email, password) VALUES (%s, %s, %s)", (username, email, passwd))
+        cursor.execute("INSERT INTO Users (username, email, pass) VALUES (%s, %s, %s)", (username, email, passwd))
         db.commit()
         print("Account Created Successfully")
     except mysql.connector.Error as err:
@@ -70,7 +70,7 @@ def signin():
     print("<--------------- Sign In --------------->")
     username = input('Username: ')
     password = pwinput.pwinput(prompt="Password: ")
-    cursor.execute("SELECT * FROM Users WHERE username = %s AND password = %s", (username, password))
+    cursor.execute("SELECT * FROM Users WHERE username = %s AND pass = %s", (username, password))
     result = cursor.fetchone()
 
     if result:
@@ -86,11 +86,15 @@ def clear_screen():
 
 option = 0
 while option != 3:
-    option = int(input("1. Create New Account \n"
-                "2. Sign In \n"
-                "3. Quit Application \n"
-                "Choose one of the option above (1-3): "))
-    clear_screen()
-    option_handler(option)
+    try:
+        option = int(input("1. Create New Account \n"
+                    "2. Sign In \n"
+                    "3. Quit Application \n"
+                    "Choose one of the option above (1-3): "))
+        clear_screen()
+        option_handler(option)
+    except ValueError:
+        print("Invalid Input. Select a number (1-3).")
+
 cursor.close()
 db.close()

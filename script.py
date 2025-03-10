@@ -14,13 +14,24 @@ cursor = db.cursor()
 
 def createAcc():
     print("<------------- Create Account --------------->")
-    while hasUser(username) and hasEmail(email):
+    username = " "
+    email = " "
+    if hasUser(username) and hasEmail(email):
         username = input('Username: ')
         email = input('Email: ')
 
     passwd = passRequire()
-    cursor.execute()
+    insert_user(username, email, passwd)
 
+def insert_user(username, email, password):
+    try:
+        query = "INSERT INTO Users (username, email, password) VALUES (%s, %s, %s)"
+        cursor.execute(query, (username, email, password))
+        db.commit()
+        print("Account Created Successfully")
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        db.rollback()
 
 def hasUser(username):
     try:

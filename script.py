@@ -1,6 +1,5 @@
 import os
 import pwinput
-import subprocess
 import mysql.connector
 from mysql.connector import Error
 
@@ -15,13 +14,13 @@ cursor = db.cursor()
 
 def createAcc():
     print("<------------- Create Account --------------->")
-    username = input('Username: ')
-    email = input('Email: ')
-
     while hasUser(username) and hasEmail(email):
         username = input('Username: ')
         email = input('Email: ')
-        passwd = passRequire()
+
+    passwd = passRequire()
+    cursor.execute()
+
 
 def hasUser(username):
     try:
@@ -57,17 +56,25 @@ def passRequire():
     while len(password) < 8:
         print("Password must be at least 8 characters long.")
         password = pwinput.pwinput(prompt="Password: ")
+    
+    return password
 
 def option_handler(option):
-    match option:
-        case 1:
-            createAcc()
-        case 2:
-            signin()
-        case 3:
-            return "Successfully Quit Application"
-        case _:
-            return "Invalid Option"
+    try:
+        option = int(option)
+    except ValueError:
+        print("Invalid Option. Please enter a number.")
+        return
+    
+    if option == 1:
+        createAcc()
+    elif option == 2:
+        signin()
+    elif option == 3:
+        print("Successfully Exited")
+        exit()
+    else:
+        print("Invalid Option")
 
 def signin():
     print("<--------------- Sign In --------------->")
@@ -82,17 +89,18 @@ def signin():
         print("Invalid Login")
 
 def clear_screen():
-    os_name = os_name
-    if os_name == 'posix':
-        subprocess.call('clear')
-    elif os_name == 'nt':
-        subprocess.call('cls', shell=True)
+    if os.name == "nt":
+        os.system("cls")
     else:
-        print("OS not supported to clear screen.")
+        os.system("clear")
 
-option = input("1. Create New Account \n"
-    "2. Sign In \n"
-    "3. Quit Application \n"
-    "Choose one of the option above (1-3): ")
-clear_screen()
-option_handler(option)
+option = " "
+while option != "3":
+    option = input("1. Create New Account \n"
+                "2. Sign In \n"
+                "3. Quit Application \n"
+                "Choose one of the option above (1-3): ")
+    clear_screen()
+    option_handler(option)
+cursor.close()
+db.close()

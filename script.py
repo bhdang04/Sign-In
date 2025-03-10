@@ -14,19 +14,20 @@ cursor = db.cursor()
 
 def createAcc():
     print("<------------- Create Account --------------->")
-    username = " "
-    email = " "
-    if hasUser(username) and hasEmail(email):
+    username = input('Username: ')
+    email = input('Email: ')
+
+    while hasUser(username) or hasEmail(email):
+        print("Username or Email already taken. Try again.")
         username = input('Username: ')
         email = input('Email: ')
 
     passwd = passRequire()
     insert_user(username, email, passwd)
 
-def insert_user(username, email, password):
+def insert_user(username, email, passwd):
     try:
-        query = "INSERT INTO Users (username, email, password) VALUES (%s, %s, %s)"
-        cursor.execute(query, (username, email, password))
+        cursor.execute("INSERT INTO Users (username, email, password) VALUES (%s, %s, %s)", (username, email, passwd))
         db.commit()
         print("Account Created Successfully")
     except mysql.connector.Error as err:
@@ -34,32 +35,12 @@ def insert_user(username, email, password):
         db.rollback()
 
 def hasUser(username):
-    try:
-        cursor.execute("SELECT * FROM Users WHERE username = %s", (username,))
-        result = cursor.fetchone()
-
-        if result:
-            print(f"Error: Username '{username}' already exists. Please choose a different username.")   
-            return False         
-        else:
-            print("Username is available.")
-            return True
-    except Error as e: 
-        print(f"Error: {e}")
+    cursor.execute("SELECT * FROM Users WHERE username = %s", (username,))
+    return cursor.fetchone() is not None
     
 def hasEmail(email):
-    try:
-        cursor.execute("SELECT * FROM Users WHERE email = %s", (email,))
-        result = cursor.fetchone()
-
-        if result:
-            print(f"Error: Email '{email}' already exists. Please enter a different email")
-            return False
-        else:
-            print("Email is available")
-            return True
-    except Error as e: 
-        print(f"Error: {e}")
+    cursor.execute("SELECT * FROM Users WHERE email = %s", (email,))
+    return cursor.fetchone() is not None
 
 def passRequire():
     password = pwinput.pwinput(prompt="Password: ")
@@ -71,12 +52,6 @@ def passRequire():
     return password
 
 def option_handler(option):
-    try:
-        option = int(option)
-    except ValueError:
-        print("Invalid Option. Please enter a number.")
-        return
-    
     if option == 1:
         createAcc()
     elif option == 2:
@@ -84,12 +59,16 @@ def option_handler(option):
     elif option == 3:
         print("Successfully Exited")
         exit()
+    elif option == 567:
+        cursor.execute("SELECT * FROM Users")
+        for row in cursor.fetchall():
+            print(row)
     else:
         print("Invalid Option")
 
 def signin():
     print("<--------------- Sign In --------------->")
-    username = input("Username: ")
+    username = input('Username: ')
     password = pwinput.pwinput(prompt="Password: ")
     cursor.execute("SELECT * FROM Users WHERE username = %s AND password = %s", (username, password))
     result = cursor.fetchone()
@@ -105,12 +84,12 @@ def clear_screen():
     else:
         os.system("clear")
 
-option = " "
-while option != "3":
-    option = input("1. Create New Account \n"
+option = 0
+while option != 3:
+    option = int(input("1. Create New Account \n"
                 "2. Sign In \n"
                 "3. Quit Application \n"
-                "Choose one of the option above (1-3): ")
+                "Choose one of the option above (1-3): "))
     clear_screen()
     option_handler(option)
 cursor.close()
